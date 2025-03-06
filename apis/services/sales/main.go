@@ -11,6 +11,8 @@ import (
 	"github.com/ardanlabs/service/foundation/logger"
 )
 
+var build = "develop"
+
 // pattern used here is to have the main function that calls
 // a run function. if error, log error and exit
 func main() {
@@ -36,7 +38,7 @@ func main() {
 
 func run(ctx context.Context, log *logger.Logger) error {
 	fmt.Println(runtime.GOMAXPROCS(0))
-	log.Info(ctx, "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0))
+	log.Info(ctx, "startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "build", build)
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
