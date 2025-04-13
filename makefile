@@ -5,6 +5,11 @@ SHELL = $(if $(wildcard $(SHELL_PATH)), /bin/ash, /bin/bash)
 run:
 	go run apis/services/sales/main.go | go run apis/tooling/logfmt/main.go
 
+help:
+	go run apis/services/sales/main.go --help
+
+version:
+	go run apis/services/sales/main.go --version
 # ==============================================================================
 # Define dependencies
 
@@ -53,6 +58,23 @@ dev-status-all:
 	kubectl get svc -o wide
 	kubectl get pods -o wide --watch --all-namespaces
 
+# ------------------------------------------------------------------------------
+
+dev-load:
+	kind load docker-image $(SALES_IMAGE) --name $(KIND_CLUSTER)
+
+dev-apply:
+	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
+	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
+
+dev-describe-deployment:
+	kubectl describe deployment $(SALES_APP) --namespace=$(NAMESPACE)
+
+dev-describe-sales:
+	kubectl describe pod --namespace=$(NAMESPACE) -l app=$(SALES_APP)
+
+dev-logs:
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run api/tooling/logfmt/main.go -service=$(SALES_APP)
 # ==============================================================================
 # Building the images
 build: sales
