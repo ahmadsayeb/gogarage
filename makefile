@@ -75,6 +75,9 @@ dev-describe-sales:
 
 dev-logs:
 	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run api/tooling/logfmt/main.go -service=$(SALES_APP)
+
+
+dev-update-apply: build dev-load dev-apply
 # ==============================================================================
 # Building the images
 build: sales
@@ -91,3 +94,18 @@ sales:
 tidy:
 	go mod tidy
 	go mod vendor
+
+# ==============================================================================
+# Metrics and Tracing
+
+metrics-view-sc:
+	expvarmon -ports="localhost:3010" -vars="build,requests,goroutines,errors,panics,mem:memstats.HeapAlloc,mem:memstats.HeapSys,mem:memstats.Sys"
+
+metrics-view:
+	expvarmon -ports="localhost:4020" -endpoint="/metrics" -vars="build,requests,goroutines,errors,panics,mem:memstats.HeapAlloc,mem:memstats.HeapSys,mem:memstats.Sys"
+
+grafana:
+	open http://localhost:3100/
+
+statsviz:
+	open http://localhost:3010/debug/statsviz
