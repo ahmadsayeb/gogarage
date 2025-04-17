@@ -63,6 +63,10 @@ dev-status-all:
 dev-load:
 	kind load docker-image $(SALES_IMAGE) --name $(KIND_CLUSTER)
 
+dev-restart:
+	kubectl rollout restart deployment $(SALES_APP) --namespace=$(NAMESPACE)
+
+
 dev-apply:
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
 	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(SALES_APP) --timeout=120s --for=condition=Ready
@@ -109,3 +113,4 @@ grafana:
 
 statsviz:
 	open http://localhost:3010/debug/statsviz
+	
