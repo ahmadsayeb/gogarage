@@ -10,6 +10,9 @@ help:
 
 version:
 	go run apis/services/sales/main.go --version
+
+curl-test:
+	curl -il -X GET http://localhost:3000/test
 # ==============================================================================
 # Define dependencies
 
@@ -79,6 +82,8 @@ dev-describe-sales:
 
 dev-logs:
 	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run api/tooling/logfmt/main.go -service=$(SALES_APP)
+
+dev-update: build dev-load dev-restart
 
 
 dev-update-apply: build dev-load dev-apply
