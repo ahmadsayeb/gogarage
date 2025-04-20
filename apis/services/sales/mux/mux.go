@@ -4,11 +4,15 @@ import (
 	"os"
 
 	"github.com/ardanlabs/service/apis/services/sales/route/sys/checkapi"
+	"github.com/ardanlabs/service/app/api/mid"
+	"github.com/ardanlabs/service/foundation/logger"
 	"github.com/ardanlabs/service/foundation/web"
 )
 
-func WebAPI(shutdown chan os.Signal) *web.App {
-	app := web.NewApp(shutdown)
-	checkapi.Route(app)
-	return app
+func WebAPI(log *logger.Logger, shutdown chan os.Signal) *web.App {
+	mux := web.NewApp(shutdown, mid.Logger(log))
+
+	checkapi.Route(mux)
+
+	return mux
 }
