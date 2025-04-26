@@ -7,5 +7,5 @@ import (
 func Route(app *web.App) {
 	app.HandleFunc("/liveness", liveness)
 	app.HandleFunc("/readiness", readiness)
-
+	app.HandleFunc("/testerror", testerror)
 }

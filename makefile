@@ -19,6 +19,9 @@ curl-live:
 
 curl-ready:
 	curl -il -X GET http://localhost:3000/readiness
+
+curl-error:
+	curl -il -X GET http://localhost:3000/testerror
 # ==============================================================================
 # Define dependencies
 
@@ -87,7 +90,7 @@ dev-describe-sales:
 	kubectl describe pod --namespace=$(NAMESPACE) -l app=$(SALES_APP)
 
 dev-logs:
-	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run api/tooling/logfmt/main.go -service=$(SALES_APP)
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run apis/tooling/logfmt/main.go -service=$(SALES_APP)
 
 dev-update: build dev-load dev-restart
 
