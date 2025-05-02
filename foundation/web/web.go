@@ -35,6 +35,27 @@ func NewApp(shutdown chan os.Signal, mw ...MidHandler) *App {
 	}
 }
 
+func (a *App) HandleFuncNoMiddleware(pattern string, handler Handler, mw ...MidHandler) {
+	h := func(w http.ResponseWriter, r *http.Request) {
+		v := Values{
+			TraceID: uuid.NewString(),
+			Now:     time.Now().UTC(),
+		}
+		ctx := setValues(r.Context(), &v)
+		//PUT CODE HERE
+		// Logging Direct NO! foundation package shouldn't have logging.
+		// thats why we have the middleware
+		if err := handler(ctx, w, r); err != nil {
+			// fmt.Println("Error handling request:", err)
+			if validateError(err) {
+				a.SignalShutdown()
+				return
+			}
+		}
+	}
+	a.ServeMux.HandleFunc(pattern, h)
+}
+
 func (a *App) HandleFunc(pattern string, handler Handler, mw ...MidHandler) {
 	handler = wrapMiddleware(mw, handler)
 	handler = wrapMiddleware(a.mw, handler)

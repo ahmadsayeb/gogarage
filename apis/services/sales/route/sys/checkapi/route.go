@@ -5,8 +5,8 @@ import (
 )
 
 func Route(app *web.App) {
-	app.HandleFunc("/liveness", liveness)
-	app.HandleFunc("/readiness", readiness)
+	app.HandleFuncNoMiddleware("/liveness", liveness)
+	app.HandleFuncNoMiddleware("/readiness", readiness)
 	app.HandleFunc("/testerror", testerror)
 	app.HandleFunc("/testpanic", testpanic)
 }
